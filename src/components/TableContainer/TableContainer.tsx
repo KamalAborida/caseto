@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Heading } from "@chakra-ui/react";
+import { Box, Button, Heading, HStack } from "@chakra-ui/react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Table } from "../Table";
 import type { Column } from "../Table/Table";
@@ -46,10 +46,14 @@ export const TableContainer = ({
     }));
   };
 
+  const handleAddDataClick = () => {
+    console.log("add data");
+  };
+
   return (
     <Box
       width="100%"
-      p="4"
+      p="lg"
       // border="1px solid"
       // borderColor="red.200"
     >
@@ -81,7 +85,7 @@ export const TableContainer = ({
       )}
 
       {!loading && !error && (
-        <Box p={"sm"} >
+        <Box>
           <Heading size="2xl" mb="6" color="gray.800">
             {tableName}
           </Heading>
@@ -95,6 +99,18 @@ export const TableContainer = ({
           />
         </Box>
       )}
+
+      <HStack justifyContent="flex-end" alignItems="center" mt={"md"}>
+        <Button
+          onClick={handleAddDataClick}
+          mb="6"
+          variant="solid"
+          colorPalette="brand"
+          size="md"
+        >
+          {t("Add Data")}
+        </Button>
+      </HStack>
     </Box>
   );
 };

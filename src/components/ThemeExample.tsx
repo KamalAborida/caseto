@@ -4,6 +4,7 @@ import { Loader } from "./Loader";
 import { ErrorMsg } from "./ErrorMsg";
 import { LabelInput } from "./LabelInput/LabelInput";
 import { FaLock } from "react-icons/fa";
+import { TablesDynamicFormExample } from "./TablesDynamicForm/TablesDynamicFormExample";
 
 export function ThemeExample() {
   return (
@@ -154,6 +155,8 @@ export function ThemeExample() {
           </Box>
         </Stack>
       </Box>
+
+      <TablesDynamicFormExample />
     </Stack>
   );
 }
