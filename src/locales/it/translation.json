@@ -1,0 +1,27 @@
+{
+  "login": "Accedi",
+  "Welcome": "Benvenuto",
+  "Loading": "Caricamento",
+  "Please fill in all fields": "Si prega di compilare tutti i campi",
+  "Please enter a valid email address": "Si prega di inserire un indirizzo email valido",
+  "Email": "Email",
+  "Enter your email": "Inserisci la tua email",
+  "Password": "Password",
+  "Enter your password": "Inserisci la tua password",
+  "Logging in...": "Accesso in corso...",
+  "MyApp": "MiaApp",
+  "Logout": "Esci",
+  "Get back to login": "Torna al login",
+  "Continue as guest": "Continua come ospite",
+  "Customers": "Clienti",
+  "Make Request": "Fai una richiesta",
+  "New Request": "Nuova richiesta",
+  "Columns:": "Colonne:",
+  "No data available": "Nessun dato disponibile",
+  "English": "Inglese",
+  "Italiano": "Italiano",
+  "Available Tables": "Tabelle Disponibili",
+  "Select a table to view its data": "Seleziona una tabella per visualizzare i suoi dati",
+  "No tables available": "Nessuna tabella disponibile"
+}
+

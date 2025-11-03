@@ -1,0 +1,27 @@
+{
+  "login": "Login",
+  "Welcome": "Welcome",
+  "Loading": "Loading",
+  "Please fill in all fields": "Please fill in all fields",
+  "Please enter a valid email address": "Please enter a valid email address",
+  "Email": "Email",
+  "Enter your email": "Enter your email",
+  "Password": "Password",
+  "Enter your password": "Enter your password",
+  "Logging in...": "Logging in...",
+  "MyApp": "MyApp",
+  "Logout": "Logout",
+  "Get back to login": "Get back to login",
+  "Continue as guest": "Continue as guest",
+  "Customers": "Customers",
+  "Make Request": "Make Request",
+  "New Request": "New Request",
+  "Columns:": "Columns:",
+  "No data available": "No data available",
+  "English": "English",
+  "Italiano": "Italian",
+  "Available Tables": "Available Tables",
+  "Select a table to view its data": "Select a table to view its data",
+  "No tables available": "No tables available"
+}
+
