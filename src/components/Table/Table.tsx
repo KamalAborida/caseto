@@ -49,7 +49,6 @@ export function Table<T extends Record<string, unknown>>({
         stickyHeader={stickyHeader}
         showColumnBorder={showColumnBorder}
       >
-
         <ChakraTable.Header>
           <ChakraTable.Row bg="brand.300">
             {columns.map((column) => (

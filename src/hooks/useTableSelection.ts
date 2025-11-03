@@ -2,6 +2,7 @@ import { useState } from "react";
 
 export const useTableSelection = () => {
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
+  const [selectedTableColumns, setSelectedTableColumns] = useState<string[]>([]);
 
   const handleSelectTable = (tableName: string) => {
     setSelectedTable(tableName);
@@ -15,6 +16,8 @@ export const useTableSelection = () => {
     selectedTable,
     handleSelectTable,
     handleBackClick,
+    selectedTableColumns,
+    setSelectedTableColumns,
   };
 };
 

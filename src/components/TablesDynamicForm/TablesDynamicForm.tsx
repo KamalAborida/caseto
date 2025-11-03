@@ -1,5 +1,5 @@
 import { Formik, Form } from "formik";
-import { Box, Button, VStack, Text } from "@chakra-ui/react";
+import { Box, Button, VStack, Text, Grid } from "@chakra-ui/react";
 import * as Yup from "yup";
 import { LabelInput } from "../LabelInput";
 import { LabelSelect } from "../LabelSelect";
@@ -32,7 +32,8 @@ export const TablesDynamicForm = ({
 }: TablesDynamicFormProps) => {
   // Build initial values from fields
   const initialValues = fields.reduce((acc, field) => {
-    acc[field.name] = field.initialValue !== undefined ? field.initialValue : "";
+    acc[field.name] =
+      field.initialValue !== undefined ? field.initialValue : "";
     return acc;
   }, {} as Record<string, any>);
 
@@ -40,17 +41,21 @@ export const TablesDynamicForm = ({
   const validationSchema = Yup.object(
     fields.reduce((acc, field) => {
       if (field.isRequired) {
-        let fieldSchema: any = Yup.string().required(`${field.label || field.name} is required`);
-        
+        let fieldSchema: any = Yup.string().required(
+          `${field.label || field.name} is required`
+        );
+
         // Handle different field types for validation
         if (field.type === "email") {
           fieldSchema = Yup.string()
             .email("Invalid email address")
             .required(`${field.label || field.name} is required`);
         } else if (field.type === "number") {
-          fieldSchema = Yup.number().required(`${field.label || field.name} is required`);
+          fieldSchema = Yup.number().required(
+            `${field.label || field.name} is required`
+          );
         }
-        
+
         acc[field.name] = fieldSchema;
       } else {
         // Optional fields
@@ -68,7 +73,14 @@ export const TablesDynamicForm = ({
 
   // Render field based on type
   const renderField = (field: FieldConfig, formikProps: any) => {
-    const { values, errors, touched, isSubmitting, handleChange, setFieldValue } = formikProps;
+    const {
+      values,
+      errors,
+      touched,
+      isSubmitting,
+      handleChange,
+      setFieldValue,
+    } = formikProps;
     const fieldError = touched[field.name] ? errors[field.name] : undefined;
     const hasError = !!(touched[field.name] && errors[field.name]);
 
@@ -78,7 +90,9 @@ export const TablesDynamicForm = ({
           <LabelSelect
             key={field.name}
             labelText={field.label || field.name}
-            placeholder={field.placeholder || `Select ${field.label || field.name}`}
+            placeholder={
+              field.placeholder || `Select ${field.label || field.name}`
+            }
             options={field.options || []}
             onChange={(value) => setFieldValue(field.name, value)}
             selectProps={{
@@ -99,8 +113,18 @@ export const TablesDynamicForm = ({
           <LabelInput
             key={field.name}
             labelText={field.label || field.name}
-            placeholder={field.placeholder || `Enter ${field.label || field.name}`}
-            inputType={field.type === "password" ? "password" : field.type === "email" ? "email" : field.type === "number" ? "number" : "text"}
+            placeholder={
+              field.placeholder || `Enter ${field.label || field.name}`
+            }
+            inputType={
+              field.type === "password"
+                ? "password"
+                : field.type === "email"
+                ? "email"
+                : field.type === "number"
+                ? "number"
+                : "text"
+            }
             onChange={handleChange(field.name)}
             inputProps={{
               value: values[field.name],
@@ -118,7 +142,10 @@ export const TablesDynamicForm = ({
     try {
       await onSubmit(values, formikHelpers);
     } catch (error: any) {
-      formikHelpers.setFieldError("general", error?.message || "An error occurred. Please try again.");
+      formikHelpers.setFieldError(
+        "general",
+        error?.message || "An error occurred. Please try again."
+      );
     } finally {
       formikHelpers.setSubmitting(false);
     }
@@ -133,17 +160,19 @@ export const TablesDynamicForm = ({
     >
       {(formikProps) => {
         const { errors, isSubmitting } = formikProps;
-        
+
         return (
           <Box
             as={Form}
             width="100%"
-            maxWidth="500px"
+            // maxWidth="500px"
             padding="8"
             borderRadius="lg"
-            boxShadow="lg"
-            bg="white"
-            _dark={{ bg: "gray.800" }}
+            border="1px solid"
+            borderColor="gray.200"
+            // boxShadow="lg"
+            // bg="white"
+            // _dark={{ bg: "gray.800" }}
           >
             <VStack gap="6" alignItems="stretch">
               {formTitle && (
@@ -158,7 +187,9 @@ export const TablesDynamicForm = ({
                 isInBox={true}
               />
 
-              {fields.map((field) => renderField(field, formikProps))}
+              <Grid templateColumns="repeat(2, 1fr)" gap="md">
+                {fields.map((field) => renderField(field, formikProps))}
+              </Grid>
 
               <Button
                 type="submit"
@@ -177,4 +208,3 @@ export const TablesDynamicForm = ({
     </Formik>
   );
 };
-

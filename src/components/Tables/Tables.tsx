@@ -1,18 +1,18 @@
 import { Box } from "@chakra-ui/react";
-import { useTableSelection } from "../../hooks/useTableSelection";
+// import { useTableSelection } from "../../hooks/useTableSelection";
 import {
   TablesCardsContainer,
   type TableMetadata,
 } from "../TablesCardsContainer";
 import { TableContainer } from "../TableContainer";
+import { useTablesPageContext } from "../../contexts/Tables/TablesContext";
 
 export interface TablesProps {
   tables: TableMetadata[];
 }
 
 export const Tables = ({ tables }: TablesProps) => {
-  const { selectedTable, handleSelectTable, handleBackClick } =
-    useTableSelection();
+  const { selectedTable, handleSelectTable, handleBackClick } = useTablesPageContext();
 
   return (
     <Box

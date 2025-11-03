@@ -6,16 +6,11 @@ import { useGetRequest } from "../../hooks/useGetRequest";
 import { Loader } from "../../components/Loader";
 import { ErrorMsg } from "../../components/ErrorMsg";
 import type { TableMetadata } from "@/components/TablesCardsContainer/TablesCardsContainer";
-// Import the context hook when your hooks are ready
-// import { useTablesPageContext } from "../../contexts/Tables";
 
-const TablesContent = () => {
+const HomeContent = () => {
   const { t } = useTranslation();
   const { execute, loading, error, reset, data } = useGetRequest();
   const [tables, setTables] = useState<TableMetadata[]>([]);
-  
-  // Use the context hook when ready
-  // const { /* your context values */ } = useTablesPageContext();
 
   useEffect(() => {
     reset();
@@ -29,7 +24,9 @@ const TablesContent = () => {
   }, [data]);
 
   return (
-    <Box padding={"4"}>
+    <Box
+      padding={"4"}
+    >
       <VStack gap={6}>
         {loading && <Loader isLoading={loading} />}
         {error && <ErrorMsg isError={true} errorMsg={error} />}
@@ -39,5 +36,4 @@ const TablesContent = () => {
   );
 };
 
-export default TablesContent;
-
+export default HomeContent;

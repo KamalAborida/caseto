@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Box, Button, Heading, HStack } from "@chakra-ui/react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Table } from "../Table";
@@ -7,6 +7,18 @@ import { Loader } from "../Loader";
 import { ErrorMsg } from "../ErrorMsg";
 import { useTranslation } from "react-i18next";
 import { useGetRequest } from "../../hooks/useGetRequest";
+import { useTablesPageContext } from "../../contexts/Tables/TablesContext";
+import { TablesDynamicForm } from "../TablesDynamicForm/TablesDynamicForm";
+import type { FieldConfig } from "../TablesDynamicForm/TablesDynamicForm";
+import {
+  DialogRoot,
+  DialogContent,
+  DialogHeader,
+  DialogBody,
+  DialogBackdrop,
+  DialogCloseTrigger,
+  DialogTitle,
+} from "../Chakra/dialog";
 
 export interface TableContainerProps {
   tableName: string;
@@ -18,8 +30,19 @@ export const TableContainer = ({
   onBackClick,
 }: TableContainerProps) => {
   const { t } = useTranslation();
+  const { 
+    openForm, 
+    closeForm,
+    isFormOpened,
+    setSelectedTableColumns, 
+    selectedTableColumns,
+    mode,
+    tableDataToUpdate,
+    startCreateProcess,
+    createTable,
+    updateTable,
+  } = useTablesPageContext();
   const { execute, loading, error, reset, data } = useGetRequest();
-  const [columns, setColumns] = useState<string[]>([]);
 
   useEffect(() => {
     if (!tableName) return;
@@ -28,11 +51,10 @@ export const TableContainer = ({
   }, [execute, reset, t, tableName]);
 
   useEffect(() => {
-    // console.log("data", data);
     if (data) {
-      setColumns(data.columns);
+      setSelectedTableColumns(data.columns);
     }
-  }, [data]);
+  }, [data, setSelectedTableColumns]);
 
   const generateTableColumns = (
     columnNames: string[]
@@ -47,7 +69,44 @@ export const TableContainer = ({
   };
 
   const handleAddDataClick = () => {
-    console.log("add data");
+    startCreateProcess();
+    openForm();
+  };
+
+  // Map selectedTableColumns to FieldConfig for the dynamic form
+  const formFields: FieldConfig[] = useMemo(() => {
+    if (!selectedTableColumns || selectedTableColumns.length === 0) {
+      return [];
+    }
+
+    return selectedTableColumns.map((columnName) => {
+      const fieldName = columnName.toLowerCase().replace(/ /g, "");
+      
+      return {
+        name: fieldName,
+        label: columnName,
+        type: "text",
+        isRequired: true,
+        initialValue: mode === "UPDATE" ? tableDataToUpdate[fieldName] || "" : "",
+        placeholder: `Enter ${columnName}`,
+      };
+    });
+  }, [selectedTableColumns, mode, tableDataToUpdate]);
+
+  // Handle form submission
+  const handleFormSubmit = async (values: any, formikHelpers: any) => {
+    try {
+      if (mode === "CREATE") {
+        await createTable(values);
+      } else if (mode === "UPDATE") {
+        const tableId = tableDataToUpdate.id || tableDataToUpdate._id;
+        await updateTable(tableId, values);
+      }
+      formikHelpers.setSubmitting(false);
+    } catch (error: any) {
+      formikHelpers.setSubmitting(false);
+      throw error;
+    }
   };
 
   return (
@@ -90,7 +149,7 @@ export const TableContainer = ({
             {tableName}
           </Heading>
           <Table
-            columns={generateTableColumns(columns)}
+            columns={generateTableColumns(selectedTableColumns)}
             data={[]}
             striped
             interactive
@@ -111,6 +170,30 @@ export const TableContainer = ({
           {t("Add Data")}
         </Button>
       </HStack>
+
+      <DialogRoot
+        open={isFormOpened} 
+        onOpenChange={(e) => !e.open && closeForm()}
+        size="lg"
+      >
+        <DialogBackdrop />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {mode === "CREATE" ? t("Add New Data") : t("Update Data")}
+            </DialogTitle>
+          </DialogHeader>
+          <DialogCloseTrigger />
+          <DialogBody>
+            <TablesDynamicForm
+              fields={formFields}
+              onSubmit={handleFormSubmit}
+              submitButtonText={mode === "CREATE" ? t("Create") : t("Update")}
+              formTitle=""
+            />
+          </DialogBody>
+        </DialogContent>
+      </DialogRoot>
     </Box>
   );
 };
