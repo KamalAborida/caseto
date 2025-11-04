@@ -13,7 +13,7 @@ export const CustomersSettingsMenu = () => {
     localStorage.removeItem("token");
     console.log("Going back to login...");
     // Navigate to auth page
-    navigate("/auth");
+    navigate("/");
   };
 
   return (
