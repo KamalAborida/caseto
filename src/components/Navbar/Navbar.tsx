@@ -31,7 +31,7 @@ export const Navbar = () => {
           fontSize="xl" 
           fontWeight="bold"
           cursor="pointer"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/home")}
           _hover={{ opacity: 0.8 }}
           transition="opacity 0.2s"
         >
@@ -43,9 +43,9 @@ export const Navbar = () => {
           <Button 
             variant="ghost" 
             size="sm"
-            onClick={() => navigate("/users")}
+            onClick={() => navigate("users")}
             aria-label={t("Users")}
-            bg={location.pathname === "/users" ? "brand.50" : "transparent"}
+            bg={location.pathname === "/home/users" ? "brand.50" : "transparent"}
             _hover={{ bg: location.pathname === "/users" ? "brand.200" : "gray.100" }}
           >
             <LuUsers />
@@ -53,9 +53,9 @@ export const Navbar = () => {
           <Button 
             variant="ghost" 
             size="sm"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/home")}
             aria-label={t("Tables")}
-            bg={location.pathname === "/" ? "brand.50" : "transparent"}
+            bg={location.pathname === "/home" ? "brand.50" : "transparent"}
             _hover={{ bg: location.pathname === "/" ? "brand.200" : "gray.100" }}
           >
             <LuTable />

@@ -9,11 +9,11 @@ import { MainLayout } from "./layouts/MainLayout";
 export const router = createBrowserRouter([
   {
     index: true,
-    path: "/auth",
+    // path: "/auth",
     element: <Login />,
   },
   {
-    path: "/",
+    path: "/home",
     element: <MainLayout />,
     children: [
       {

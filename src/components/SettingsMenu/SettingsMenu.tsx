@@ -13,7 +13,7 @@ export const SettingsMenu = () => {
     localStorage.removeItem("token");
     console.log("Logging out...");
     // Navigate to auth page
-    navigate("/auth");
+    navigate("/");
   };
 
   return (

@@ -48,7 +48,7 @@ export const LoginForm = () => {
         localStorage.setItem("token", response.user.token);
 
         // Navigate to home
-        navigate("/");
+        navigate("/home");
       }
     } catch (err: any) {
       // Error is already handled by the hook
