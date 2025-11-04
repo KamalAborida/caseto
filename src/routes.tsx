@@ -8,6 +8,7 @@ import { MainLayout } from "./layouts/MainLayout";
 
 export const router = createBrowserRouter([
   {
+    index: true,
     path: "/auth",
     element: <Login />,
   },
