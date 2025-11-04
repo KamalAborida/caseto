@@ -37,8 +37,10 @@ export const TableContainer = ({
     mode,
     tableDataToUpdate,
     startCreateProcess,
+    startUpdateProcess,
     createTable,
     updateTable,
+    deleteTableRecord,
   } = useTablesPageContext();
   const {
     execute: getTableColumns,
@@ -128,13 +130,30 @@ export const TableContainer = ({
         console.log("tableName", tableName);
         await createTable(values, tableName);
       } else if (mode === "UPDATE") {
-        const tableId = tableDataToUpdate.id || tableDataToUpdate._id;
-        await updateTable(tableId, values);
+        const recordId = tableDataToUpdate.id || tableDataToUpdate._id;
+        await updateTable(recordId, values, tableName);
       }
       formikHelpers.setSubmitting(false);
     } catch (error: any) {
       formikHelpers.setSubmitting(false);
       throw error;
+    }
+  };
+
+  // Handle edit action
+  const handleEdit = async (row: Record<string, unknown>) => {
+    await startUpdateProcess(row);
+    openForm();
+  };
+
+  // Handle delete action
+  const handleDelete = async (row: Record<string, unknown>) => {
+    const recordId = row.id || row._id;
+    if (recordId) {
+      await deleteTableRecord(tableName, String(recordId));
+      // Refresh table data
+      getTableDataReset();
+      getTableData(`/user/crud/${tableName}/list`);
     }
   };
 
@@ -193,6 +212,9 @@ export const TableContainer = ({
               interactive
               showBorder
               showColumnBorder
+              actions
+              onEdit={handleEdit}
+              onDelete={handleDelete}
             />
           </Box>
         )}

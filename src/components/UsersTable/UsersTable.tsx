@@ -9,7 +9,7 @@ import { getUsersColumns, type User } from "./UsersColumns";
 
 export const UsersTable = () => {
   const { execute, loading, error, data } = useGetRequest<{ users: User[] }>();
-  const { openForm, startUpdateProcess } = useUsersPageContext();
+  const { openForm, startUpdateProcess, deleteUser } = useUsersPageContext();
 
   useEffect(() => {
     execute("/user/list");
@@ -20,9 +20,9 @@ export const UsersTable = () => {
     openForm();
   };
 
-  const handleDelete = (userId: string) => {
-    // TODO: Implement delete functionality
-    console.log("Delete user:", userId);
+  const handleDelete = async (userId: string) => {
+    await deleteUser(userId);
+    await execute("/user/list");
   };
 
   const columns = getUsersColumns({

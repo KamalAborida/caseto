@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { usePostRequest } from "./usePostRequest";
 import { usePutRequest } from "./usePutRequest";
-import { useGetRequest } from "./useGetRequest";
+import { useDeleteRequest } from "./useDeleteRequest";
 
 // Types
 type FormMode = "CREATE" | "UPDATE";
@@ -16,29 +16,17 @@ export const useTablesForm = (closeForm: () => void) => {
 
   const { execute: postRequest } = usePostRequest();
   const { execute: putRequest } = usePutRequest();
-  const { execute: getRequest } = useGetRequest();
+  const { execute: deleteRequest } = useDeleteRequest();
 
   const startCreateProcess = useCallback(() => {
     setMode("CREATE");
     setTableDataToUpdate({});
   }, []);
 
-  const startUpdateProcess = useCallback(async (tableId: string) => {
+  const startUpdateProcess = useCallback(async (rowData: Record<string, any>) => {
     setMode("UPDATE");
-    
-    try {
-      // Fetch table data from server
-      const response = await getRequest(`/table/get?id=${tableId}`);
-
-      console.log("response", response);
-      
-      if (response && response.table) {
-        setTableDataToUpdate(response.table);
-      }
-    } catch (error) {
-      console.error("Failed to fetch table data:", error);
-    }
-  }, [getRequest]);
+    setTableDataToUpdate(rowData);
+  }, []);
 
   const createTable = useCallback(async (data: TableData, tableName: string) => {
     try {
@@ -59,9 +47,9 @@ export const useTablesForm = (closeForm: () => void) => {
     }
   }, [postRequest, closeForm]);
 
-  const updateTable = useCallback(async (tableId: string, data: TableData) => {
+  const updateTable = useCallback(async (recordId: string, data: TableData, tableName: string) => {
     try {
-      const response = await putRequest(`/table/update?id=${tableId}`, data);
+      const response = await putRequest(`user/crud/${tableName}/update?id=${recordId}`, data);
       
       if (response) {
         closeForm();
@@ -75,6 +63,19 @@ export const useTablesForm = (closeForm: () => void) => {
     }
   }, [putRequest, closeForm]);
 
+  const deleteTableRecord = useCallback(async (tableName: string, recordId: string) => {
+    try {
+      const response = await deleteRequest(`user/crud/${tableName}/remove?id=${recordId}`);
+      if (response) {
+        return response;
+      }
+      return null;
+    } catch (error) {
+      console.error("Failed to delete table record:", error);
+      throw error;
+    }
+  }, [deleteRequest]);
+
   return {
     mode,
     tableDataToUpdate,
@@ -82,5 +83,6 @@ export const useTablesForm = (closeForm: () => void) => {
     startUpdateProcess,
     createTable,
     updateTable,
+    deleteTableRecord,
   };
 };

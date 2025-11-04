@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import Axios from "./Axios";
-import { AxiosError, AxiosRequestConfig } from "axios";
+import { AxiosError, type AxiosRequestConfig } from "axios";
 
 interface UseDeleteRequestState<T> {
   data: T | null;

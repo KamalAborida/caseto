@@ -1,4 +1,5 @@
-import { Table as ChakraTable, Box } from "@chakra-ui/react";
+import { Table as ChakraTable, Box, IconButton } from "@chakra-ui/react";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import { useTranslation } from "../../hooks/useTranslation";
 
 export interface Column<T> {
@@ -18,6 +19,9 @@ interface TableProps<T> {
   interactive?: boolean
   stickyHeader?: boolean
   showColumnBorder?: boolean
+  actions?: boolean
+  onEdit?: (row: T) => void
+  onDelete?: (row: T) => void
 }
 
 export function Table<T extends Record<string, unknown>>({
@@ -30,25 +34,29 @@ export function Table<T extends Record<string, unknown>>({
   interactive = false,
   stickyHeader = false,
   showColumnBorder = false,
+  actions = false,
+  onEdit,
+  onDelete,
 }: TableProps<T>) {
   const { t } = useTranslation();
 
   return (
     <Box
       borderRadius="md"
-      overflow="hidden"
       border={showBorder ? "1px solid" : "none"}
       borderColor="gray.200"
       shadow={showBorder ? "sm" : "none"}
+      overflow="hidden"
     >
-      <ChakraTable.Root
-        variant={variant}
-        size={size}
-        striped={striped}
-        interactive={interactive}
-        stickyHeader={stickyHeader}
-        showColumnBorder={showColumnBorder}
-      >
+      <Box overflowX="auto">
+        <ChakraTable.Root
+          variant={variant}
+          size={size}
+          striped={striped}
+          interactive={interactive}
+          stickyHeader={stickyHeader}
+          showColumnBorder={showColumnBorder}
+        >
         <ChakraTable.Header>
           <ChakraTable.Row bg="brand.300">
             {columns.map((column) => (
@@ -61,6 +69,15 @@ export function Table<T extends Record<string, unknown>>({
                 {column.header}
               </ChakraTable.ColumnHeader>
             ))}
+            {actions && (
+              <ChakraTable.ColumnHeader
+                textAlign="center"
+                color="brand.50"
+                fontWeight="semibold"
+              >
+                {t("Actions")}
+              </ChakraTable.ColumnHeader>
+            )}
           </ChakraTable.Row>
         </ChakraTable.Header>
 
@@ -68,7 +85,7 @@ export function Table<T extends Record<string, unknown>>({
           {data.length === 0 ? (
             <ChakraTable.Row>
               <ChakraTable.Cell
-                colSpan={columns.length}
+                colSpan={columns.length + (actions ? 1 : 0)}
                 textAlign="center"
                 p="lg"
                 color="gray.500"
@@ -90,12 +107,41 @@ export function Table<T extends Record<string, unknown>>({
                       : String(row[column.key] ?? '')}
                   </ChakraTable.Cell>
                 ))}
+                {actions && (
+                  <ChakraTable.Cell textAlign="center">
+                    <Box display="flex" gap="2" justifyContent="center">
+                      {onEdit && (
+                        <IconButton
+                          aria-label="Edit"
+                          size="sm"
+                          variant="ghost"
+                          colorPalette="blue"
+                          onClick={() => onEdit(row)}
+                        >
+                          <FaEdit />
+                        </IconButton>
+                      )}
+                      {onDelete && (
+                        <IconButton
+                          aria-label="Delete"
+                          size="sm"
+                          variant="ghost"
+                          colorPalette="red"
+                          onClick={() => onDelete(row)}
+                        >
+                          <FaTrash />
+                        </IconButton>
+                      )}
+                    </Box>
+                  </ChakraTable.Cell>
+                )}
               </ChakraTable.Row>
             ))
           )}
         </ChakraTable.Body>
 
       </ChakraTable.Root>
+      </Box>
     </Box>
   )
 }

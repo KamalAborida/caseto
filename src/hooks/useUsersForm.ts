@@ -3,6 +3,7 @@ import * as Yup from "yup";
 import { usePostRequest } from "./usePostRequest";
 import { usePutRequest } from "./usePutRequest";
 import { useGetRequest } from "./useGetRequest";
+import { useDeleteRequest } from "./useDeleteRequest";
 
 // Types
 type FormMode = "CREATE" | "UPDATE";
@@ -51,6 +52,7 @@ export const useUsersForm = (closeForm: () => void) => {
   const { execute: postRequest } = usePostRequest();
   const { execute: putRequest } = usePutRequest();
   const { execute: getRequest } = useGetRequest();
+  const { execute: deleteRequest } = useDeleteRequest();
 
   const startCreateProcess = useCallback(() => {
     setMode("CREATE");
@@ -112,6 +114,19 @@ export const useUsersForm = (closeForm: () => void) => {
     }
   }, [putRequest, closeForm]);
 
+  const deleteUser = useCallback(async (userId: string) => {
+    try {
+      const response = await deleteRequest(`user/remove?id=${userId}`);
+      if (response) {
+        return response;
+      }
+      return null;
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+      throw error;
+    }
+  }, [deleteRequest, closeForm]);
+
   return {
     mode,
     userDataToUpdate,
@@ -120,6 +135,7 @@ export const useUsersForm = (closeForm: () => void) => {
     startUpdateProcess,
     createUser,
     updateUser,
+    deleteUser,
   };
 };
 
