@@ -30,42 +30,58 @@ export const TableContainer = ({
   onBackClick,
 }: TableContainerProps) => {
   const { t } = useTranslation();
-  const { 
-    openForm, 
+  const {
+    openForm,
     closeForm,
     isFormOpened,
-    setSelectedTableColumns, 
-    selectedTableColumns,
     mode,
     tableDataToUpdate,
     startCreateProcess,
     createTable,
     updateTable,
   } = useTablesPageContext();
-  const { execute, loading, error, reset, data } = useGetRequest();
+  const {
+    execute: getTableColumns,
+    loading: getTableColumnsLoading,
+    error: getTableColumnsError,
+    reset: getTableColumnsReset,
+    data: getTableColumnsData,
+  } = useGetRequest();
+
+  const {
+    execute: getTableData,
+    loading: getTableDataLoading,
+    error: getTableDataError,
+    reset: getTableDataReset,
+    data: getTableDataData,
+  } = useGetRequest();
 
   useEffect(() => {
     if (!tableName) return;
-    reset();
-    execute("/user/tables/listColumns", { params: { tableName } });
-  }, [execute, reset, t, tableName]);
+    getTableColumnsReset();
+    getTableColumns("/user/tables/listColumns", { params: { tableName } });
+  }, [tableName]);
 
   useEffect(() => {
-    if (data) {
-      setSelectedTableColumns(data.columns);
+    if (!tableName) return;
+    getTableDataReset();
+    if (getTableColumnsData && getTableColumnsData?.columns) {
+      getTableData(`/user/crud/${tableName}/list`);
     }
-  }, [data, setSelectedTableColumns]);
+  }, [getTableColumnsData, tableName, isFormOpened]);
 
   const generateTableColumns = (
-    columnNames: string[]
+    columnNames: any[]
   ): Column<Record<string, unknown>>[] => {
     if (!columnNames) return [];
-    console.log("columnNames", columnNames);
-    return columnNames.map((col) => ({
-      key: col.toLowerCase().replace(/ /g, ""),
-      header: col,
-      textAlign: "start",
-    }));
+    return columnNames.map((col) => {
+      // console.log("col", col);
+      return {
+        key: col?.name,
+        header: col?.name?.toString(),
+        textAlign: "start",
+      };
+    });
   };
 
   const handleAddDataClick = () => {
@@ -73,31 +89,44 @@ export const TableContainer = ({
     openForm();
   };
 
-  // Map selectedTableColumns to FieldConfig for the dynamic form
   const formFields: FieldConfig[] = useMemo(() => {
-    if (!selectedTableColumns || selectedTableColumns.length === 0) {
+    // console.log("selectedTableColumns", getTableColumnsData?.columns);
+
+    if (
+      !getTableColumnsData?.columns ||
+      getTableColumnsData?.columns.length === 0
+    ) {
       return [];
     }
 
-    return selectedTableColumns.map((columnName) => {
-      const fieldName = columnName.toLowerCase().replace(/ /g, "");
-      
+    const columnsToUse = getTableColumnsData?.columns?.filter(
+      (column: any) => column?.name?.toLowerCase()?.replace(/ /g, "") !== "id"
+    );
+
+    return columnsToUse?.map((column: any) => {
+      const fieldName = column?.name;
+
+      // console.log("column", column);
+
       return {
         name: fieldName,
-        label: columnName,
-        type: "text",
-        isRequired: true,
-        initialValue: mode === "UPDATE" ? tableDataToUpdate[fieldName] || "" : "",
-        placeholder: `Enter ${columnName}`,
+        label: column?.name,
+        type: column?.type === "integer" ? "number" : "text",
+        isRequired: column?.nullable === false,
+        initialValue:
+          mode === "UPDATE" ? tableDataToUpdate[fieldName] || "" : "",
+        placeholder: `Enter ${column?.name}`,
       };
     });
-  }, [selectedTableColumns, mode, tableDataToUpdate]);
+  }, [getTableColumnsData?.columns, mode, tableDataToUpdate]);
 
   // Handle form submission
   const handleFormSubmit = async (values: any, formikHelpers: any) => {
     try {
       if (mode === "CREATE") {
-        await createTable(values);
+        console.log("values", values);
+        console.log("tableName", tableName);
+        await createTable(values, tableName);
       } else if (mode === "UPDATE") {
         const tableId = tableDataToUpdate.id || tableDataToUpdate._id;
         await updateTable(tableId, values);
@@ -126,38 +155,47 @@ export const TableContainer = ({
         <FaArrowLeft />
       </Button>
 
-      {loading && (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          minHeight="400px"
-        >
-          <Loader isLoading={loading} />
-        </Box>
-      )}
+      {getTableColumnsLoading ||
+        (getTableDataLoading && (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            minHeight="400px"
+          >
+            <Loader isLoading={getTableColumnsLoading || getTableDataLoading} />
+          </Box>
+        ))}
 
-      {error && !loading && (
-        <Box mb="4">
-          <ErrorMsg isError={true} errorMsg={error} />
-        </Box>
-      )}
+      {getTableColumnsError &&
+        !getTableColumnsLoading &&
+        !getTableDataLoading && (
+          <Box mb="4">
+            <ErrorMsg
+              isError={true}
+              errorMsg={getTableColumnsError || getTableDataError || ""}
+            />
+          </Box>
+        )}
 
-      {!loading && !error && (
-        <Box>
-          <Heading size="2xl" mb="6" color="gray.800">
-            {tableName}
-          </Heading>
-          <Table
-            columns={generateTableColumns(selectedTableColumns)}
-            data={[]}
-            striped
-            interactive
-            showBorder
-            showColumnBorder
-          />
-        </Box>
-      )}
+      {!getTableColumnsLoading &&
+        !getTableColumnsError &&
+        !getTableDataLoading &&
+        !getTableDataError && (
+          <Box>
+            <Heading size="2xl" mb="6" color="gray.800">
+              {tableName}
+            </Heading>
+            <Table
+              columns={generateTableColumns(getTableColumnsData?.columns || [])}
+              data={getTableDataData?.data || []}
+              // striped
+              interactive
+              showBorder
+              showColumnBorder
+            />
+          </Box>
+        )}
 
       <HStack justifyContent="flex-end" alignItems="center" mt={"md"}>
         <Button
@@ -172,7 +210,7 @@ export const TableContainer = ({
       </HStack>
 
       <DialogRoot
-        open={isFormOpened} 
+        open={isFormOpened}
         onOpenChange={(e) => !e.open && closeForm()}
         size="lg"
       >

@@ -30,6 +30,7 @@ export const TablesDynamicForm = ({
   submitButtonText = "Submit",
   formTitle,
 }: TablesDynamicFormProps) => {
+  console.log("fields", fields);
   // Build initial values from fields
   const initialValues = fields.reduce((acc, field) => {
     acc[field.name] =

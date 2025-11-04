@@ -40,9 +40,12 @@ export const useTablesForm = (closeForm: () => void) => {
     }
   }, [getRequest]);
 
-  const createTable = useCallback(async (data: TableData) => {
+  const createTable = useCallback(async (data: TableData, tableName: string) => {
     try {
-      const response = await postRequest("/table/create", data);
+      console.log("data", data);
+      console.log("tableName", tableName);
+
+      const response = await postRequest(`user/crud/${tableName}/create`, data);
       
       if (response) {
         closeForm();
